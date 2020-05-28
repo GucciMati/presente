@@ -12,11 +12,16 @@
 #define MINION_RAD 12
 #define BRUTE_HP   12
 #define BRUTE_RAD  16
+#define BOMBER_HP  14
+#define BOMBER_RAD 18
 
 #define BULLET_DMG 3
 #define BULLET_SPEED 16
 #define BULLET_RAD   5
 
+#define EXPLOTION_DMG 5
+#define EXPLOTION_RAD 45
+#define EXPLOTION_DUR 8
 
 // ==== PLAYER DEFINITION
 typedef struct {
@@ -26,7 +31,7 @@ typedef struct {
 } player;
 
 // ==== ENEMY DEFINITION
-typedef enum {MINION=0, BRUTE=1} enemykind;
+typedef enum {MINION=0, BRUTE=1, BOMBER=2} enemykind;
 
 typedef struct {
     entity ent;
@@ -39,6 +44,13 @@ typedef struct {
     entity ent;
     // TODO: We may want to add more fields...
 } bullet;
+
+// ==== EXPLOTION DEFINITION
+
+typedef struct {
+    entity ent;
+    int cont;
+} explotion;
 
 // ==== STATE DEFINITION
 
@@ -59,6 +71,11 @@ typedef struct {
     // An array of bullets:
     int n_bullets;
     bullet bullets[MAX_BULLETS];
+     
+    // The explotion
+    explotion exp;
+
+    
 
     // State of the controls, should be updated on each step.
     int button_state[N_BUTTONS];

@@ -89,10 +89,34 @@ void state_update(level *lvl, state *sta){
     entity_physics(lvl,&sta->pla.ent);
     if(sta->pla.ent.hp<=0) sta->pla.ent.dead=1;
     // Update enemies
+        
     for(int i=0;i<sta->n_enemies;i++){
         entity_physics(lvl,&sta->enemies[i].ent);
         // Kill enemy if it has less than 0 HP
-        if(sta->enemies[i].ent.hp<=0) sta->enemies[i].ent.dead = 1;
+        if(sta->enemies[i].ent.hp<=0){
+             sta->exp.cont -= 1;
+             if(sta->enemies[i].kind==BOMBER){
+                sta->exp.cont = 60;
+                explotion *new_explotion = &sta->exp;
+                memset(new_explotion,0,sizeof(explotion));
+                new_explotion->ent.x        = sta->enemies[i].ent.x;
+                new_explotion->ent.y        = sta->enemies[i].ent.y;
+
+                new_explotion->ent.rad      = EXPLOTION_RAD;
+                new_explotion->ent.hp       = EXPLOTION_DMG;      
+                
+                
+                if (entity_collision(&sta->exp.ent,&sta->pla.ent)){
+                    sta->pla.ent.hp -= sta->exp.ent.hp;
+                    
+                }    
+                
+                
+                
+             }
+             if (sta->exp.cont==0) sta->exp.ent.dead = 1;
+             sta->enemies[i].ent.dead = 1;
+        }
     }
     // Update bullets
     for(int i=0;i<sta->n_bullets;i++){
@@ -101,6 +125,11 @@ void state_update(level *lvl, state *sta){
         if(col) sta->bullets[i].ent.dead = 1;
     }
 
+    {
+    sta->exp.cont= 120;
+    sta->exp.cont -= 1;
+    if (sta->exp.cont==0) sta->exp.ent.dead = 1;
+    }
 
     // == Delete dead entities
     {
@@ -152,15 +181,20 @@ void state_populate_random(level *lvl, state *sta, int n_enemies){
                 new_enemy->ent.x = (posx+0.5)*TILE_SIZE;
                 new_enemy->ent.y = (posy+0.5)*TILE_SIZE;
                 // Pick an enemy tipe and set variables accordingly
-                int brute = rand()%4==0; // brute has 1/4 chance.
+                int brute = rand()%4==0;// brute has 1/4 chance.
+                int bomber = rand()%6==0; 
                 if(brute){
                     new_enemy->kind   = BRUTE;
                     new_enemy->ent.hp = BRUTE_HP;
                     new_enemy->ent.rad = BRUTE_RAD;
+                }else if(bomber){
+                    new_enemy->kind   = BOMBER;
+                    new_enemy->ent.hp = BOMBER_HP;
+                    new_enemy->ent.rad = BOMBER_RAD;
                 }else{
                     new_enemy->kind   = MINION;
                     new_enemy->ent.hp = MINION_HP;
-                    new_enemy->ent.rad = MINION_RAD;
+                    new_enemy->ent.rad= MINION_RAD;
                 }
                 // Break while(1) as the operation was successful
                 break;

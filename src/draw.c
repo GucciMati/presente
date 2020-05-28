@@ -45,8 +45,10 @@ void draw_state(const level *lvl, const state *sta){
         // Draw a circle with the radius of the entity, color depends on the enemy type
         if(sta->enemies[i].kind == MINION){
             DrawCircleV(vec,ent.rad,YELLOW);
-        }else{
+        }else if(sta->enemies[i].kind == BRUTE){
             DrawCircleV(vec,ent.rad,RED);
+        }else{
+            DrawCircleV(vec,ent.rad,PURPLE);
         }
     }
 
@@ -68,6 +70,15 @@ void draw_state(const level *lvl, const state *sta){
         Vector2 vec = {ent.x,ent.y};
         // Draw a circle with the radius of the entity
         DrawCircleV(vec,ent.rad,PINK);
+    }
+
+    // Draw Explotion
+    {
+        //get a copy of the explotion's entity
+        entity ent = sta->exp.ent;
+        // Initialize a Vector2 that represents the center of the entity position
+        Vector2 vec = {ent.x,ent.y};
+        DrawCircleV(vec,ent.rad,ORANGE);
     }
 
     // Stop drawing relative to the camera
